@@ -1,12 +1,12 @@
-TimeOut Is a library to easily handle non blocking delay. It is store all instance into a container and sort them to save MCU time at each pass.
+TimeOut Is a library to easily handle non blocking delay. It is store all instance into a container and sort them to save MCU time at each checkup.
 
 Usage: To be use when «delay()» could have work but you need arduino to do other task between the timer start and is triggered.
 
 Non recommended usage: 
 	-For very time critical timing.
-		It run into « void loop », so it is dependant of the speed of the loop. It could be a couple 			of millisecond offset. For time critical timing, use interrupt instead.
+		It run into « void loop », so it is dependant of the speed of the loop. It could be a couple of millisecond offset. For time critical timing, use interrupt instead.
 	-For short very short or very long delay :
-		For very short delay, it take some time to sort the container when addin and when 			triggering a delay, so It could be better to use interrupt for realy small delay. For long 			delay, « millis() » is also not so accurate. There could be a better way. (No test have been 		done. If people want to do some testing for short and log delay, you could post your 			result on TimeOut github.)
+		For very short delay, it take some time to sort the container when addin and when triggering a delay, so It could be better to use interrupt for realy small delay. For long delay, « millis() » is also not so accurate. There could be a better way. (No test have been 		done. If people want to do some testing for short and log delay, you could post your 			result on TimeOut github.)
 
 
 TimeOut usage : Callback is triggered only once after being set, after the delay.
@@ -60,14 +60,16 @@ timeOut_Lock_Undelable :
 Use functionnality of both, timeOut_Lock and  Undelable. So until triggered, when set the first time, the callback will fire after the delay.
 
 
-Interval : After being set, callback will be triggered at each delay interval.
-	Interval interval0; (Start an instance)
+Interval : 
+After being set, callback will be triggered at each delay interval.
 
-	interval0.interval(1000,intervalPrint0);(set the interval, To change callback or delay, you must cancel() the interval first)
+Interval interval0; (Start an instance)
 
-	interval0.cancel();(cancel an interval)
+interval0.interval(1000,intervalPrint0);(set the interval, To change callback or delay, you must cancel() the interval first)
 
-	interval0.handler();(you need only one handler for all instance of interval. It have to be put on void loop();)
+interval0.cancel();(cancel an interval)
+
+interval0.handler();(you need only one handler for all instance of interval. It have to be put on void loop();)
 	
 
 
