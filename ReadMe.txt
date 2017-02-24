@@ -72,7 +72,7 @@ interval0.cancel();(cancel an interval)
 interval0.handler();(you need only one handler for all instance of interval. It have to be put on void loop();)
 
 
-Little tool: second, minutes ans hour macro:
+Little tool: second, minutes and hour macro:
 	- sc(int), return int*1000 for a second
 	- mn(int), return int*60000 for a minute
 	- hr(int), return int*3600000 for an hour
