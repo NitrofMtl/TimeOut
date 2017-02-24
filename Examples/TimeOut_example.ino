@@ -1,6 +1,6 @@
 #include <TimeOut.h>
 
-TimeOut timeout0;
+TimeOut timeout0; //start instance, have to be inside global scope 
 TimeOut timeout2;
 TimeOut timeout3;
 TimeOut timeout5;
@@ -16,10 +16,10 @@ TimeOut timeout6;
 
 void setup() {
   Serial.begin(9600);
-  
+      //   calling timeOut could be inside any function -->
   timeout0.timeOut(10000, callback0); //delay, callback function
   timeout2.timeOut(4500, callback2, timeOut_Lock); //delay, callback function, parameter
-  timeout2.timeOut(15000), callback2); //will not change timeout2 because it was lock.
+  timeout2.timeOut(15000, callback2); //will not change timeout2 because it was lock.
   timeout3.timeOut(60000, callback3);
   timeout5.timeOut(75000, callback5, timeOut_Undeleable);
   timeout5.cancel(); //timer will not be delete because it have been set to Undelable
@@ -27,7 +27,7 @@ void setup() {
 }
 
 void loop() {
-  timeout0.handler(); //monitor handler
+  timeout0.handler(); //monitor handler, Have to be into void loop
 }
 
 void callback0() {

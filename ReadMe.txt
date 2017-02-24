@@ -14,7 +14,7 @@ TimeOut usage : Callback is triggered only once after being set, after the delay
 		TimeOut timeout0; (instance declaration have to be in global scope)
 
 	Set the timeout :
-		timeout0.timeOut(10000, callback0); //delay, function callback
+		timeout0.timeOut(10000, callback0); //delay, function callback, could be call inside any function
 
 	add the handler into void loop :
 		timeout0.handler(); (you need only one handler for all instance of TimeOut. It have to be put in void loop();)
@@ -65,9 +65,9 @@ After being set, callback will be triggered at each delay interval.
 
 Interval interval0; (Start an instance)
 
-interval0.interval(1000,intervalPrint0);(set the interval, To change callback or delay, you must cancel() the interval first)
+interval0.interval(1000,intervalPrint0);(set the interval, To change callback or delay, you must cancel() the interval first, could be call inside any function)
 
-interval0.cancel();(cancel an interval)
+interval0.cancel();(cancel an interval, could be call inside any function)
 
 interval0.handler();(you need only one handler for all instance of interval. It have to be put on void loop();)
 
