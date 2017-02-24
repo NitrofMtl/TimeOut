@@ -70,7 +70,21 @@ interval0.interval(1000,intervalPrint0);(set the interval, To change callback or
 interval0.cancel();(cancel an interval)
 
 interval0.handler();(you need only one handler for all instance of interval. It have to be put on void loop();)
+
+
+Little tool: second, minutes ans hour macro:
+	- sc(int), return int*1000 for a second
+	- mn(int), return int*60000 for a minute
+	- hr(int), return int*3600000 for an hour
+
+For example, for a delay you could do:
+	unsigned long someDelay = hr(1)+mn(30)+sc(20) //will do 1:30 and 20 second delay
 	
+	timeout0.timeOut(someDelay, callback0);	
+
+------>>	NOTE !!!!!!!!!!!!!!!!!!!!!!
+	Time macro do not support floating point !!!
+		Can't do: hr(1.5)
 
 
 
