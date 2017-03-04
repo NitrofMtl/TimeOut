@@ -29,6 +29,31 @@
 
 #include "TimeOut.h"
 
+TimeOut::TimeOut(){
+
+}
+
+TimeOut::TimeOut(unsigned long _delay, void (*_callback)()){
+	TimeOut *onHeap = new TimeOut();
+	//if (lock) return; //do not set a timer to a locked instance
+	for ( int i = 0; i < sizeOfTimeOut; i++){
+		if (!timerList[i]){ //check for first emty spot								
+			onHeap->timeStamp = millis();
+			onHeap->callback = _callback;
+			onHeap->delay = _delay;
+			triage(onHeap); //place the instance into container
+			return;
+		}
+		if(sizeOfTimeOut-1 == i) {
+			Serial.println("TimeOut container is full !!! Can't add a new timer.");
+			
+		}
+	}
+}
+/*
+TimeOut::~TimeOut(){
+	delete this;
+}*/
 
 bool TimeOut::timeOut(unsigned long _delay, void (*_callback)()){
 	if (lock) return false; //do not set a timer to a locked instance
@@ -91,6 +116,7 @@ bool TimeOut::handler(){
 		timerList[0]->callback();
 		timerList[0]->lock = false;
 		timerList[0]->undeletable = false;
+		delete timerList[0]; //delete timer on heap
 		for (int i = 0; i < sizeOfTimeOut-1; i++){//rollback all pointer to beginning
 			timerList[i] = timerList[i+1];
 		}

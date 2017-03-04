@@ -50,11 +50,14 @@
 
 class TimeOut {
 public:
+	TimeOut();
+	TimeOut(unsigned long _delay, void (*_callback)());
 	bool timeOut(unsigned long _delay, void (*_callback)());
 	bool timeOut(unsigned long _delay, void (*_callback)(), uint8_t _timerType);
 	void cancel();
 	static bool handler();
 	void printContainer();
+//	~TimeOut();
 
 private:
 	void (*callback)();
