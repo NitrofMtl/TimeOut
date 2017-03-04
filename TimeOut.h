@@ -57,7 +57,6 @@ public:
 	void cancel();
 	static bool handler();
 	void printContainer();
-//	~TimeOut();
 
 private:
 	void (*callback)();
@@ -66,12 +65,12 @@ private:
 	void triage(TimeOut *input);
 	bool lock = false;
 	bool undeletable = false;
+	bool isOnHeap = false;
 };
 
-
-
-
 static TimeOut *timerList[sizeOfTimeOut];
+
+
 #define sizeOfInterval 10
 
 class Interval {
