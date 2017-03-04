@@ -110,15 +110,15 @@ void TimeOut::triage(TimeOut *input){	//sort timer by time to be trigged
 			rank = i;
 			break;
 		}
-		int containerRemain = timeStamp+timerList[i]->delay-now;
-		int inputRemain = input->timeStamp+input->delay-now;
-		if (containerRemain > input->timeStamp+input->delay-now) { //spot with timer a smaler than this
+		long containerRemain = timerList[i]->timeStamp+timerList[i]->delay-now;
+		long inputRemain = input->timeStamp+input->delay-now;
+		if (containerRemain > inputRemain) { //spot with timer a smaler than this
 			rank = i;
 			break;
 		}
 	}
-	for (int i = sizeOfTimeOut; i > rank; i--){ //push back from the end each bigger delay
-		timerList[i] = timerList[i-1];		
+	for (int i = sizeOfTimeOut-1; i > rank; i--){ //push back from the end each bigger delay
+		timerList[i] = timerList[i-1];	
 	}
 	timerList[rank] = input;
 }
@@ -233,8 +233,8 @@ void Interval::triage(Interval *input){ //sort timer by time to be trigged
 			rank = i;			
 			break;
 		}
-		int container = intervalList[i]->timeStamp+intervalList[i]->delay-now;
-		int input_ = input->timeStamp+input->delay-now;
+		long container = intervalList[i]->timeStamp+intervalList[i]->delay-now;
+		long input_ = input->timeStamp+input->delay-now;
 		if(container>input_){
 		rank = i;
 		break;
