@@ -55,10 +55,11 @@ public:
 	TimeOut(unsigned long _delay, void (*_callback)());
 	bool timeOut(unsigned long _delay, void (*_callback)());
 	bool timeOut(unsigned long _delay, void (*_callback)(), uint8_t _timerType);
-	bool timeOut(unsigned long _delay, TimeOut* ptr, uint8_t _timerType);
 	void cancel();
 	static bool handler();
-	void printContainer();	
+	void printContainer();
+protected:
+	bool timeOut(unsigned long _delay, TimeOut* ptr, uint8_t _timerType);
 private:
 	void (*callback)();
 	unsigned long delay = 0;
@@ -76,11 +77,12 @@ private:
 
 class Interval {
 public:
-	bool interval(unsigned long _delay, void (*_callback)());
-	bool interval(unsigned long _delay, Interval* ptr);
+	bool interval(unsigned long _delay, void (*_callback)());	
 	void cancel();
 	static bool handler();
 	void printContainer();
+protected:
+	bool interval(unsigned long _delay, Interval* ptr);
 private:
 	void (*callback)();
 	unsigned long delay = 0;
