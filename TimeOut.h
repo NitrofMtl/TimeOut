@@ -30,11 +30,10 @@
     #include "WProgram.h"
 #endif
 
-#define timeOut_Lock 1				//timer canton be overwriten
+#define timeOut_Normal 0			//timer can be overwriten or cleared
+#define timeOut_Lock 1				//timer cannot be overwriten
 #define timeOut_Undeleable 2 		//timer cannot be cleared
 #define timeOut_Lock_Undelable 3	//timer cannot be overwriten or cleared
-
-#define sizeOfTimeOut 20
 
 #ifndef sc(x)
 #define sc(x)(x*1000UL)
@@ -46,7 +45,9 @@
 
 #ifndef hr(x)
 #define hr(x)(x*3600000UL)
-#endif  
+#endif
+
+#define sizeOfTimeOut 20
 
 class TimeOut {
 public:
@@ -54,10 +55,10 @@ public:
 	TimeOut(unsigned long _delay, void (*_callback)());
 	bool timeOut(unsigned long _delay, void (*_callback)());
 	bool timeOut(unsigned long _delay, void (*_callback)(), uint8_t _timerType);
+	bool timeOut(unsigned long _delay, TimeOut* ptr, uint8_t _timerType);
 	void cancel();
 	static bool handler();
-	void printContainer();
-
+	void printContainer();	
 private:
 	void (*callback)();
 	unsigned long delay = 0;
@@ -66,9 +67,9 @@ private:
 	bool lock = false;
 	bool undeletable = false;
 	bool isOnHeap = false;
+	virtual void TO_callbackCaller();//enable inheritance support overwrite this function inderived class
+	static TimeOut *timerList[sizeOfTimeOut];
 };
-
-static TimeOut *timerList[sizeOfTimeOut];
 
 
 #define sizeOfInterval 10
@@ -76,6 +77,7 @@ static TimeOut *timerList[sizeOfTimeOut];
 class Interval {
 public:
 	bool interval(unsigned long _delay, void (*_callback)());
+	bool interval(unsigned long _delay, Interval* ptr);
 	void cancel();
 	static bool handler();
 	void printContainer();
@@ -86,7 +88,10 @@ private:
 	static void triage(Interval *input);
 	static void triage_handler();
 	bool set = false;
+	virtual void ITV_callbackCaller();//enable inheritance support overwrite this function inderived class
+	static Interval *intervalList[sizeOfInterval];
 };
 
-static Interval *intervalList[sizeOfInterval];
+
 #endif
+
