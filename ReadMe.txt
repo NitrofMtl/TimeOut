@@ -1,3 +1,5 @@
+V1.0
+
 TimeOut Is a library to easily handle non blocking delay. It is store all instance into a container and sort them to save MCU time at each checkup.
 
 Usage: To be use when «delay()» could have work but you need arduino to do other task between the timer start and is triggered.

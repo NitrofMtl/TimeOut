@@ -1,3 +1,7 @@
+/*
+V1.0
+*/
+
 #include <TimeOut.h>
 
 TimeOut timeout0; //start instance, have to be inside global scope 
