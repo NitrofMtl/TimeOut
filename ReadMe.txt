@@ -1,8 +1,8 @@
-V2.0
+#V2.0
 
-TimeOut Is a library to easily handle non blocking delay. It is store all instance into a container and sort them to save MCU time at each checkup.
+##TimeOut Is a library to easily handle non blocking delay. It is store all instance into a container and sort them to save MCU time at each checkup.
 
-Usage: To be use when «delay()» could have work but you need arduino to do other task between the timer start and is triggered.
+####Usage: To be use when «delay()» could have work but you need arduino to do other task between the timer start and is triggered.
 
 Non recommended usage: 
 	-For very time critical timing.
@@ -14,7 +14,7 @@ Non recommended usage:
 
 
 
-		New on version 2.0
+###		New on version 2.0
 
 -Dynamic instance allocation, not limit in size
 -linked list operation, faster operation
@@ -22,84 +22,86 @@ Non recommended usage:
 
 
 
+####
+## **TimeOut :**
 
 TimeOut usage : Callback is triggered only once after being set, after the delay.
-	Start an instance :
-		TimeOut timeout0; (instance declaration have to be in global scope)
-
-	Set the timeout :
-		timeout0.timeOut(10000, callback0); //delay, function callback, could be call inside any function
-
-	add the handler into void loop :
-		timeout0.handler(); (you need only one handler for all instance of TimeOut. It have to be put in void loop();)
-
-	cancel a timeOut :
-		timeout0.cancel(); 
-
+* Start an instance :
+```		TimeOut timeout0; (instance declaration have to be in global scope)
+```
+* Set the timeout :
+```		timeout0.timeOut(10000, callback0); //delay, function callback, could be call inside any function
+```
+* add the handler into void loop :
+```		timeout0.handler(); (you need only one handler for all instance of TimeOut. It have to be put in void loop();)
+```
+* cancel a timeOut :
+```		timeout0.cancel(); 
+```
 To set the timeout, there is 4 mode possible :
-
+```
 TIMEOUT_NORMAL 			//timer can be overwriten or cleared, you can just omit it, it have overload
 TIMEOUT_LOCK 				//timer cannot be overwriten
 TIMEOUT_UNDELETABLE  		//timer cannot be cleared
 TIMEOUT_LOCK_UNDELETABLE 	//timer cannot be cleared or overwriten
+```
 
-
-	Normal mode :
-You can clear timeout with clear() and overwrite it with a new value .
+* Normal mode :
+You can clear timeout with `<cancel()>` and overwrite it with a new value .
 Example :
 
-timeout0.timeOut(10000, callback0); //set time out
+```timeout0.timeOut(10000, callback0); //set time out
 delay(1000); //wait a seconde for demonstration
 timeout0.timeOut(10000, callback0); //set new timeout time 10 seconde from now
 timeout0.cancel();//timeOut have been deleted and callback will not append
-
-timeOut_Lock :
+```
+* timeOut_Lock :
 You can't overwrite a timeout previously set. It will keep the delay to the first value until it is triggered.
 But it can be deleted.
 Example :
 
-timeout0.timeOut(10000, callback0, timeOut_Lock);//set time out
+```timeout0.timeOut(10000, callback0, timeOut_Lock);//set time out
 delay(1000); //wait a seconde for demonstration
 timeout0.timeOut(10000, callback0); //will not set because it is lock
 timeout0.timeOut(10000, callback0, timeOut_Lock);//will not set because it is lock
 timeout0.cancel();//time out have been deleted and callback will not append
-
-timeOut_Undeleable :
+```
+* timeOut_Undeleable :
 You can overwrite a timeout like in normal mode but clear() will not work.
 Example :
-timeout0.timeOut(, callback0, timeOut_Undeleable);
-timeout0.cancel(); //will be ignore and callback will be triggered after delay
+```timeout0.timeOut(, callback0, timeOut_Undeleable);
+```timeout0.cancel(); //will be ignore and callback will be triggered after delay
 
 
-timeOut_Lock_Undelable :
+* timeOut_Lock_Undelable :
 Use functionnality of both, timeOut_Lock and  Undelable. So until triggered, when set the first time, the callback will fire after the delay.
 
 
-Interval : 
-After being set, callback will be triggered at each delay interval.
+##**Interval :** 
+####After being set, callback will be triggered at each delay interval.
 
-Interval interval0; (Start an instance)
+```Interval interval0; (Start an instance)
 
 interval0.interval(1000,intervalPrint0);(set the interval, To change callback or delay, you must cancel() the interval first, could be call inside any function)
 
 interval0.cancel();(cancel an interval, could be call inside any function)
 
 interval0.handler();(you need only one handler for all instance of interval. It have to be put on void loop();)
-
+```
 
 Little tool: second, minutes and hour macro:
-	- sc(int), return int*1000 for a second
-	- mn(int), return int*60000 for a minute
-	- hr(int), return int*3600000 for an hour
+	- `<sc(int)>`, return int*1000 for a second
+	- `<mn(int)>`, return int*60000 for a minute
+	- `<hr(int)>`, return int*3600000 for an hour
 
 For example, for a delay you could do:
-	unsigned long someDelay = hr(1)+mn(30)+sc(20) //will do 1:30 and 20 second delay
-	
-	timeout0.timeOut(someDelay, callback0);	
+```	unsigned long someDelay = hr(1)+mn(30)+sc(20) //will do 1:30 and 20 second delay
 
------->>	NOTE !!!!!!!!!!!!!!!!!!!!!!
-	Time macro do not support floating point !!!
-		Can't do: hr(1.5)
+	timeout0.timeOut(someDelay, callback0);	
+```
+### **------>>	NOTE !!!!!!!!!!!!!!!!!!!!!!**
+####	Time macro do not support floating point !!!
+		Can't do: `<hr(1.5)>`
 
 
 
