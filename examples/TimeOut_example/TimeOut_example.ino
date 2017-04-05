@@ -1,5 +1,5 @@
 /*
-V1.0
+V2.1
 */
 
 #include <TimeOut.h>
@@ -9,11 +9,13 @@ TimeOut timeout2;
 TimeOut timeout3;
 TimeOut timeout5;
 TimeOut timeout6;
+TimeOut timeOut7;
 
 /*
-    timeOut_Lock            timer can ont be overwriten
-    timeOut_Undeleable      timer can not be cleared
-    timeOut_Lock_Undelable  timer can not be overwriten or cleared
+    TIMEOUT_NORMAL       timer can be overwriten or cleared(same as omit it)
+    TIMEOUT_LOCK            timer can ont be overwriten
+    TIMEOUT_UNDELETABLE      timer can not be cleared
+    TIMEOUT_LOCK_UNDELETABLE  timer can not be overwriten or cleared
 
     time macro : sc(number_of_secondes) , mn(number_of_secondes) , hr(number_of_secondes)
 */
@@ -29,12 +31,14 @@ void setup() {
   timeout5.timeOut(75000, callback5, TIMEOUT_UNDELETABLE);
   timeout5.cancel(); //timer will not be delete because it have been set to Undelable
   timeout6.timeOut(9000, callback6, TIMEOUT_LOCK_UNDELETABLE);
+  // set timeOut in 1 hour, 33 minutes and 0 seconde
+  timeOut7.timeOut(1, 33, 0, callback7, TIMEOUT_NORMAL);
 }
 
 void loop() {
-  timeout0.handler(); //monitor handler, Have to be into void loop
-  //handler is static. you could also call:
-  //TimeOut::handler();
+  //monitor handler, Have to be into void loop
+  //handler is static. you could call:
+  TimeOut::handler();
 }
 
 void callback0() {
@@ -60,5 +64,10 @@ void callback5() {
 
 void callback6() {
   Serial.println("Timer6 will execute after 9 sec.");
+  Serial.println("");
+}
+
+void callback7() {
+  Serial.println("Timer7 will execute after 1 hour, 33 minutes and 0 seconde.");
   Serial.println("");
 }

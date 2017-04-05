@@ -1,6 +1,6 @@
 /*
 
-	V2.0
+	V2.1
   Copyright (c) 4/04/2017
 
     By Nitrof
@@ -70,8 +70,10 @@ class TimeOut {
 public:
 	TimeOut();
 	TimeOut(unsigned long _delay, void (*_callback)());
+	TimeOut(uint8_t hour, uint8_t minute, uint8_t seconde, void (*_callback)());
 	bool timeOut(unsigned long _delay, void (*_callback)());
 	bool timeOut(unsigned long _delay, void (*_callback)(), uint8_t _timerType);
+	bool timeOut(uint8_t hour, uint8_t minute, uint8_t seconde, void (*_callback)(), uint8_t _timerType);
 	void cancel();
 	static bool handler();
 	static void printContainer();
@@ -103,7 +105,8 @@ typedef class intervalNode {
 
 class Interval {
 public:
-	bool interval(unsigned long _delay, void (*_callback)());	
+	bool interval(unsigned long _delay, void (*_callback)());
+	bool interval(uint8_t hour, uint8_t minute, uint8_t seconde, void (*_callback)());	
 	void cancel();
 	static bool handler();
 	static void printContainer();

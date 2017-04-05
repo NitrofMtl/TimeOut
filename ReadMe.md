@@ -1,4 +1,4 @@
-# V2.0
+# V2.1
 
 ## TimeOut Is a library to easily handle non blocking delay. It is store all instance into a container and sort them to save MCU time at each checkup.
 
@@ -18,6 +18,21 @@ Non recommended usage:
 
 * Dynamic instance allocation, not limit in size
 * linked list operation, faster operation
+
+
+**2.1 add**
+new constructor an call for  timeOut and interval:
+####
+```
+TimeOut t1(hour, minute, seconde, callback);
+
+TimeOut t2;
+t2.timeOut(hour, minute, seconde, callback, mode);
+
+
+Interval i1;
+i1.interval(hour, minute, seconde, callback);
+```
 
 
 

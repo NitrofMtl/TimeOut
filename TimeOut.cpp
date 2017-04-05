@@ -1,6 +1,6 @@
 /*
 
-	V2.0
+	V2.1
   Copyright (c) 4/04/2017
 
     By Nitrof
@@ -44,6 +44,11 @@ TimeOut::TimeOut(unsigned long _delay, void (*_callback)()) {
 	timeOut(_delay,_callback);
 }
 
+TimeOut::TimeOut(uint8_t hour, uint8_t minute, uint8_t seconde, void (*_callback)()){
+	unsigned long delay = hr(hour) + mn(minute) + sc(seconde);
+	timeOut(delay, _callback);
+}
+
 
 bool TimeOut::timeOut(unsigned long _delay, void (*_callback)()){
 	if (node) {
@@ -78,6 +83,11 @@ bool TimeOut::timeOut(unsigned long _delay, void (*_callback)(), uint8_t _timerT
 			break;
 	}
 	return true;
+}
+
+bool TimeOut::timeOut(uint8_t hour, uint8_t minute, uint8_t seconde, void (*_callback)(), uint8_t _timerType){
+	unsigned long delay = hr(hour) + mn(minute) + sc(seconde);
+	timeOut(delay, _callback, _timerType);
 }
 
 
@@ -184,6 +194,11 @@ bool Interval::interval(unsigned long _delay, void (*_callback)()){
 	node->linkedInterv = this;
 	triage(node); //place the instance into container
 	return true;
+}
+
+bool Interval::interval(uint8_t hour, uint8_t minute, uint8_t seconde, void (*_callback)()){
+	unsigned long delay = hr(hour) + mn(minute) + sc(seconde);
+	interval(delay, _callback);
 }
 
 void Interval::cancel(){

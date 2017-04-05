@@ -1,5 +1,5 @@
 /*
-  V2.0
+  V2.1
 */
 
 #include <TimeOut.h>
@@ -30,7 +30,8 @@ void setup() {
   interval1.interval(3000, intervalPrint1);
   interval1.cancel();
   
-  interval2.interval(5000, intervalPrint2);
+  //interval2 will be triggered after 1 hour, 33 minutes and 0 seconde
+  interval2.interval(1, 33, 0, intervalPrint2);
   
   class1.setInterval(4000);
 
@@ -38,7 +39,7 @@ void setup() {
 }
 
 void loop() {
-  interval0.handler(); //main monitor handler, Have to be into void loop
+  Interval::handler(); //main monitor handler, Have to be into void loop
 }
 
 void intervalPrint0() {
