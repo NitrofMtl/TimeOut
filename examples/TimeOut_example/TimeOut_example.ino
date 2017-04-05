@@ -22,16 +22,19 @@ void setup() {
   Serial.begin(9600);
       //   calling timeOut could be inside any function -->
   timeout0.timeOut(10000, callback0); //delay, callback function
-  timeout2.timeOut(4500, callback2, timeOut_Lock); //delay, callback function, parameter
+  timeout2.timeOut(4500, callback2, TIMEOUT_LOCK); //delay, callback function, parameter
   timeout2.timeOut(15000, callback2); //will not change timeout2 because it was lock.
   timeout3.timeOut(60000, callback3);
-  timeout5.timeOut(75000, callback5, timeOut_Undeleable);
+  timeout3.cancel();//will not append because canceled
+  timeout5.timeOut(75000, callback5, TIMEOUT_UNDELETABLE);
   timeout5.cancel(); //timer will not be delete because it have been set to Undelable
-  timeout6.timeOut(9000, callback6, timeOut_Lock_Undelable);
+  timeout6.timeOut(9000, callback6, TIMEOUT_LOCK_UNDELETABLE);
 }
 
 void loop() {
   timeout0.handler(); //monitor handler, Have to be into void loop
+  //handler is static. you could also call:
+  //TimeOut::handler();
 }
 
 void callback0() {
@@ -45,7 +48,7 @@ void callback2() {
 }
 
 void callback3() {
-  Serial.println("Timer3 have been trigged after 1 minute.");
+  Serial.println("Timer3 will not append because canceled.");
   Serial.println("");
 }
 
@@ -59,4 +62,3 @@ void callback6() {
   Serial.println("Timer6 will execute after 9 sec.");
   Serial.println("");
 }
-

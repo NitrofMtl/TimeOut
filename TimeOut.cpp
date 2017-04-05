@@ -1,7 +1,7 @@
 /*
 
-	V1.0
-  Copyright (c) 22/02/2017
+	V2.0
+  Copyright (c) 4/04/2017
 
     By Nitrof
 
@@ -31,298 +31,236 @@
 
 #include "TimeOut.h"
 
-TimeOut *TimeOut::timerList[sizeOfTimeOut];
+TimeOutNodePtr TimeOut::head = NULL;
 
-TimeOut::TimeOut(){
-
+void TimeOutNode::callbackTrigger() {
+	if(callback)callback(); 
+	else linkedTO->TO_callbackCaller();
 }
 
-TimeOut::TimeOut(unsigned long _delay, void (*_callback)()){
-	TimeOut *onHeap = new TimeOut();
-	for ( int i = 0; i < sizeOfTimeOut; i++){
-		if (!timerList[i]){ //check for first emty spot								
-			onHeap->timeStamp = millis();
-			onHeap->callback = _callback;
-			onHeap->delay = _delay;
-			onHeap->isOnHeap = true;
-			triage(onHeap); //place the instance into container
-			return;
-		}
-		if(sizeOfTimeOut-1 == i) {
-			Serial.println("TimeOut container is full !!! Can't add a new timer.");
-			delete onHeap; //delete timer if container already full
-		}
-	}
+TimeOut::TimeOut(){}
+
+TimeOut::TimeOut(unsigned long _delay, void (*_callback)()) {
+	timeOut(_delay,_callback);
 }
+
 
 bool TimeOut::timeOut(unsigned long _delay, void (*_callback)()){
-	if (lock) return false; //do not set a timer to a locked instance
-	for ( int i = 0; i < sizeOfTimeOut; i++){
-		if (!timerList[i]){ //check for first emty spot								
-			timeStamp = millis();
-			callback = _callback;
-			delay = _delay;
-			triage(this); //place the instance into container
-			return true;
-		}
-		if(sizeOfTimeOut-1 == i) {
-			Serial.println("TimeOut container is full !!! Can't add a new timer.");
-			return false;
-		}
-	}
+	if (node) {
+		if(node->lock) return false; //exit if node is not overwritable
+		else cancel();//delete a set timeOut for overwrite
+	}	
+	node = new TimeOutNode;		
+	node->callback = _callback;
+	node->delay = _delay;
+	node->linkedTO = this;
+	node->timeStamp = millis();
+	triage(node); //place the instance into container
+	return true;
 }
 
 
 bool TimeOut::timeOut(unsigned long _delay, void (*_callback)(), uint8_t _timerType){
-	if(!timeOut(_delay, _callback)) return false; //if timer is full bool
+	if(!timeOut(_delay, _callback)) return false; //if timer can't be set
 	switch (_timerType) {
 		case 0: break;
-		case timeOut_Lock: 
-			if (lock) return false ; //do not set a timer to a locked instance
-			lock = true; 
+		case TIMEOUT_LOCK: 
+			if (node->lock) return false ; //do not set a timer to a locked instance
+			node->lock = true; 
 			break;
-		case timeOut_Undeleable: 
-			undeletable = true; 
+		case TIMEOUT_UNDELETABLE: 
+			node->undeletable = true; 
 			break;
-		case timeOut_Lock_Undelable:
-			if (lock) return false ; //do not set a timer to a locked instance
-			lock = true;
-			undeletable = true; 
+		case TIMEOUT_LOCK_UNDELETABLE:
+			if (node->lock) return false ; //do not set a timer to a locked instance
+			node->lock = true;
+			node->undeletable = true; 
 			break;
 	}
 	return true;
 }
 
-bool TimeOut::timeOut(unsigned long _delay, TimeOut* ptr, uint8_t _timerType){
-	if (lock) return false; //do not set a timer to a locked instance
-	for ( int i = 0; i < sizeOfTimeOut; i++){
-		if (!timerList[i]){ //check for first emty spot								
-			timeStamp = millis();
-			delay = _delay;
-			triage(this); //place the instance into container
-			return true;
-		}
-		if(sizeOfTimeOut-1 == i) {
-			Serial.println("TimeOut container is full !!! Can't add a new timer.");
-			return false;
-		}
+
+void TimeOut::cancel(){
+	if (node->undeletable) return; //do not cancel a timer if Undeleable
+	TimeOutNodePtr tmpNode = TimeOut::head;
+	TimeOutNodePtr previous = NULL;
+	while(this->node!=tmpNode) {
+		previous = tmpNode;
+		tmpNode=tmpNode->next;
 	}
-	switch (_timerType) {
-		case 0: break;
-		case timeOut_Lock: 
-			if (lock) return false ; //do not set a timer to a locked instance
-			lock = true; 
-			break;
-		case timeOut_Undeleable: 
-			undeletable = true; 
-			break;
-		case timeOut_Lock_Undelable:
-			if (lock) return false ; //do not set a timer to a locked instance
-			lock = true;
-			undeletable = true; 
-			break;
-	}
-	return true;
+	if(!previous) TimeOut::head = tmpNode->next;
+	else previous->next =  tmpNode->next;
+	delete tmpNode;
 }
 
-void TimeOut::cancel(){//function to split ???
-	if (undeletable) return; //do not cancel a timer if Undeleable
-	int rank = 0;
-	while (timerList[rank] != this){
-		rank++;
-		if(rank >= sizeOfTimeOut) {
-			Serial.println("TimeOut instance not found ");
-			return;
-		}
-	}
-	for (int i = rank; i < sizeOfTimeOut-2; i++){
-		timerList[i] = timerList[i+1];
-	}
-	timerList[sizeOfTimeOut-1] = NULL;
-}
 
 bool TimeOut::handler(){
-	if(!timerList[0]) return false; // if there is no timer set, do nothing
+	if(!TimeOut::head) return false; // if there is no timer set, do nothing
 	unsigned long now = millis();
-	if(now - timerList[0]->timeStamp > timerList[0]->delay){
-		timerList[0]->TO_callbackCaller();
-		timerList[0]->lock = false;
-		timerList[0]->undeletable = false;
-		if (timerList[0]->isOnHeap) delete timerList[0]; //delete dynamic timer
-		for (int i = 0; i < sizeOfTimeOut-1; i++){//rollback all pointer to beginning
-			timerList[i] = timerList[i+1];
-		}
-		timerList[sizeOfTimeOut-1] =  NULL; //set last spot emty
-		return true;
+	if (now - TimeOut::head->timeStamp > TimeOut::head->delay){
+		TimeOut::head->callbackTrigger();
+		TimeOut::head->lock = false;
+		TimeOut::head->undeletable = false;
+		TimeOutNodePtr temp = TimeOut::head;		
+		if(TimeOut::head->next)
+			TimeOut::head = TimeOut::head->next; //switch to next timer
+		else 
+			TimeOut::head = NULL;
+		delete temp; //delete triggered timer
 	}
-	else  {
+	else {
 		return false;
-	}	
+	}
 }
 
-void TimeOut::TO_callbackCaller(){
-	if(timerList[0]->callback) callback();
-}
-
-void TimeOut::triage(TimeOut *input){	//sort timer by time remainin to be triggered
-	uint8_t rank = 0;
+void TimeOut::triage(TimeOutNodePtr current){	//sort timer by time remainin to be triggered
+	if (!TimeOut::head) { //if list is emty, set it to first
+		TimeOut::head = current;
+		return;
+	}
 	unsigned long now = millis();
-	for (int i = 0; i < sizeOfTimeOut; i++){
-		if(!timerList[i]) {
-			rank = i;
-			break;
+
+	TimeOutNodePtr it = TimeOut::head;
+	TimeOutNodePtr previous = NULL;
+
+	while (it){
+		long itRemain = it->timeStamp+it->delay-now;
+		long currentRemain = current->timeStamp+current->delay-now;
+		if (itRemain > currentRemain) { //spot with timer a smaler than this
+			//insert instance
+			if(previous) previous->next = current;
+			else TimeOut::head = current;
+			current->next = it;
+			return;
 		}
-		long containerRemain = timerList[i]->timeStamp+timerList[i]->delay-now;
-		long inputRemain = input->timeStamp+input->delay-now;
-		if (containerRemain > inputRemain) { //spot with timer a smaler than this
-			rank = i;
-			break;
-		}
+		else if (!it->next) {//if delay is the bigger, place it at the end
+			it->next = current;
+			return;
+		}	
+		previous = it;
+		it = it->next;	//it++	
 	}
-	for (int i = sizeOfTimeOut-1; i > rank; i--){ //push back from the end each bigger delay
-		timerList[i] = timerList[i-1];	
-	}
-	timerList[rank] = input;
 }
 
 void TimeOut::printContainer(){
 	Serial.println("Timer container contain the following timer: ");
-	for (int i = 0; i < sizeOfTimeOut; i++){
-		if(NULL == timerList[i]) {
-			Serial.print("Container ");
-			Serial.print(i);
-			Serial.println(" empty");
-		}
-		else {
-			Serial.print("timer ");
-			Serial.print(i);
-			Serial.print(" delay is ");
-			Serial.println(timerList[i]->delay);
-		}		
-	}
-}
-
-
-
-Interval *Interval::intervalList[sizeOfInterval];
-
-bool Interval::interval(unsigned long _delay, void (*_callback)()){
-	if (set) return false; //can't set an already set interval
-	if (intervalList[sizeOfInterval-1]){
-		Serial.println("Interval container is full !!! Can't add a new interval timer.");
-		return false; //return false if container is full
-	}
-	timeStamp = millis();
-	callback = _callback;
-	delay = _delay;
-	set = true;
-	triage(this); //place the instance into container
-	return true;
-}
-
-bool Interval::interval(unsigned long _delay, Interval* ptr){
-	if (set) return false; //can't set an already set interval
-	if (intervalList[sizeOfInterval-1]){
-		Serial.println("Interval container is full !!! Can't add a new interval timer.");
-		return false; //return false if container is full
-	}
-	timeStamp = millis();
-	delay = _delay;
-	set = true;
-	triage(this); //place the instance into container
-	return true;
-}
-
-void Interval::cancel(){
-	int rank = 0;
-	while (intervalList[rank] != this){
-		rank++;
-		if(rank >= sizeOfInterval) {
-			Serial.println("Interval instance not found ");
+	unsigned long now = millis();
+	TimeOutNodePtr it = TimeOut::head;
+	while(it){	
+		if(!TimeOut::head){
+			Serial.println("No timer set");
 			return;
 		}
+		Serial.print("Container delay ");
+		Serial.print(it->delay);
+		Serial.print(" remain: ");
+		Serial.println(it->timeStamp+it->delay-now);
+		it = it->next;
 	}
-	set = false;
-	for (int i = rank; i < sizeOfInterval-1; i++){
-		intervalList[i] = intervalList[i+1];
-	}
-	intervalList[sizeOfInterval-1] = NULL;
-}
-
-bool Interval::handler(){
-	if(!intervalList[0]) return false; // if there is no timer set, do nothing
-	unsigned long now = millis();
-	int elapsed = now - intervalList[0]->timeStamp;
-	if(elapsed > intervalList[0]->delay){
-		intervalList[0]->timeStamp = now;
-		intervalList[0]->ITV_callbackCaller();		
-		triage_handler();
-		return true;
-	}
-	else  {
-		return false;
-	}	
-}
-
-void Interval::ITV_callbackCaller(){
-	if(intervalList[0]->callback) intervalList[0]->callback();
-}
-
-void Interval::printContainer(){
-	Serial.println("Interval container contain the following timer: ");
-	unsigned long now = millis();	
-	for (int i = 0; i < sizeOfInterval; i++){
-
-		if(!intervalList[i]) {
-			Serial.print("Container ");
-			Serial.print(i);
-			Serial.println(" empty");
-		}
-		else {
-			Serial.print("timer ");
-			Serial.print(i);
-			Serial.print(" interval is ");
-			Serial.print(intervalList[i]->delay);
-			Serial.print(", time stamp:   ");
-			Serial.print(intervalList[i]->timeStamp);
-			Serial.print(", remain ");
-			int remain = intervalList[i]->timeStamp+intervalList[i]->delay-now;
-			if(remain<0) remain = 0;
-			Serial.println(remain );
-		}	
-	}
+	Serial.println("End.");
 	Serial.println();
 }
 
 
 
-void Interval::triage_handler(){
-	Interval *trigged = intervalList[0]; //save trigged instance
-	for (int i = 0; i < sizeOfInterval-1; i++){ //shift other to the beginnig
-		intervalList[i] = intervalList[i+1];
+intervalNodePtr Interval::head = NULL;
+
+void intervalNode::callbackTrigger() {
+	if(callback)callback(); 
+	else {
+		Serial.println("callbackCaller trig");
+		linkedInterv->ITV_callbackCaller();
 	}
-	intervalList[sizeOfInterval-1] = NULL;
-	triage(trigged); //add saved trigged instance at the right position
 }
 
 
-void Interval::triage(Interval *input){ //sort timer by time to be trigged
-	uint8_t rank = 0;
+bool Interval::interval(unsigned long _delay, void (*_callback)()){
+	if (node) return false; //can't set an already set interval
+	node = new intervalNode;
+	node->timeStamp = millis();
+	node->callback = _callback;
+	node->delay = _delay;
+	node->linkedInterv = this;
+	triage(node); //place the instance into container
+	return true;
+}
+
+void Interval::cancel(){
+	intervalNodePtr tmp = Interval::head;
+	intervalNodePtr previous = NULL;
+	while(this->node!=tmp){
+		previous = tmp;
+		tmp = tmp->next;
+	}
+	if(!previous) Interval::head = tmp->next;
+	else previous->next = tmp->next;
+	delete tmp;
+}
+
+bool Interval::handler(){
+	if(!Interval::head) return false;
 	unsigned long now = millis();
-	for (int i = 0; i < sizeOfInterval; i++){
-		if(!intervalList[i]) {//if container was emty, take the first spot
-			rank = i;			
-			break;
-		}
-		long container = intervalList[i]->timeStamp+intervalList[i]->delay-now;
-		long input_ = input->timeStamp+input->delay-now;
-		if(container>input_){
-		rank = i;
-		break;
-		}
+	if (now - Interval::head->timeStamp > Interval::head->delay){
+		Interval::head->callbackTrigger();
+		intervalNodePtr temp = Interval::head;	
+		if(Interval::head->next)
+			Interval::head = Interval::head->next; //switch to next timer
+		else 
+			Interval::head = NULL;
+			//reset triggered instance
+		temp->timeStamp = now;
+		temp->next = NULL;
+		triage(temp);
 	}
-	for (int i = sizeOfInterval-1; i > rank; i--){ //push back from the end each bigger delay
-		intervalList[i] = intervalList[i-1];		
+	else {
+		return false;
 	}
-	intervalList[rank] = input;
+}
+
+void Interval::printContainer(){
+	Serial.println("Interval container contain the following timer: ");
+	if(!Interval::head) Serial.println("Container emty! ");
+	unsigned long now = millis();
+	intervalNodePtr it = Interval::head;
+	while(it){	
+		if(!Interval::head){
+			Serial.println("No timer set");
+			return;
+		}
+		Serial.print("Container delay ");
+		Serial.print(it->delay);
+		Serial.print(" remain: ");
+		Serial.println(it->timeStamp+it->delay-now);
+		it = it->next;
+	}
+	Serial.println("End.");
+	Serial.println();
+}
+
+void Interval::triage(intervalNodePtr current){ //sort timer by time to be trigged
+	if (!Interval::head) {
+		Interval::head = current;
+		return;
+	}
+	unsigned long now = millis();
+	intervalNodePtr it = Interval::head;
+	intervalNodePtr previous = NULL;
+	while(it){
+		long itRemain = it->timeStamp+it->delay-now;
+		long currentRemain = current->timeStamp+current->delay-now;
+		if (itRemain > currentRemain) { //spot with timer a smaler than this
+			//insert instance
+			if(previous) previous->next = current;
+			else Interval::head = current;
+			current->next = it;
+			return;
+		}
+		else if (!it->next) {//if delay is the bigger, place it at the end
+			it->next = current;
+			return;
+		}	
+		previous = it;
+		it = it->next;	//it++	
+	}
 }

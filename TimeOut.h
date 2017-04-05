@@ -1,7 +1,7 @@
 /*
 
-	V1.0
-  Copyright (c) 22/02/2017
+	V2.0
+  Copyright (c) 4/04/2017
 
     By Nitrof
 
@@ -32,10 +32,11 @@
     #include "WProgram.h"
 #endif
 
-#define timeOut_Normal 0			//timer can be overwriten or cleared
-#define timeOut_Lock 1				//timer cannot be overwriten
-#define timeOut_Undeleable 2 		//timer cannot be cleared
-#define timeOut_Lock_Undelable 3	//timer cannot be overwriten or cleared
+
+#define TIMEOUT_NORMAL 0			//timer can be overwriten or cleared
+#define TIMEOUT_LOCK 1				//timer cannot be overwriten
+#define TIMEOUT_UNDELETABLE 2 		//timer cannot be cleared
+#define TIMEOUT_LOCK_UNDELETABLE 3	//timer cannot be overwriten or cleared
 
 #ifndef sc(x)
 #define sc(x)(x*1000UL)
@@ -49,7 +50,21 @@
 #define hr(x)(x*3600000UL)
 #endif
 
-#define sizeOfTimeOut 20
+
+class TimeOut;
+
+typedef class TimeOutNode {
+	friend class TimeOut;
+	void (*callback)();
+	unsigned long delay = 0;
+	unsigned long timeStamp = 0;
+	bool lock = false;
+	bool undeletable = false;	
+
+	TimeOutNode *next = NULL;
+	TimeOut *linkedTO = NULL; //bound timeOut instance
+	void callbackTrigger();
+}*TimeOutNodePtr;
 
 class TimeOut {
 public:
@@ -59,43 +74,45 @@ public:
 	bool timeOut(unsigned long _delay, void (*_callback)(), uint8_t _timerType);
 	void cancel();
 	static bool handler();
-	void printContainer();
-protected:
-	bool timeOut(unsigned long _delay, TimeOut* ptr, uint8_t _timerType);
+	static void printContainer();
+	//enable inheritance support overwrite this function inderived class
+	virtual void TO_callbackCaller(){};
+
 private:
-	void (*callback)();
-	unsigned long delay = 0;
-	unsigned long timeStamp = 0;
-	void triage(TimeOut *input);
-	bool lock = false;
-	bool undeletable = false;
-	bool isOnHeap = false;
-	virtual void TO_callbackCaller();//enable inheritance support overwrite this function inderived class
-	static TimeOut *timerList[sizeOfTimeOut];
+	static TimeOutNodePtr head;
+	TimeOutNodePtr node = NULL;
+	inline void triage(TimeOutNodePtr current);
 };
 
 
-#define sizeOfInterval 10
+
+class Interval;
+
+typedef class intervalNode {
+	friend class Interval;
+	void (*callback)();
+	unsigned long delay = 0;
+	unsigned long timeStamp = 0;
+	bool set = false;
+
+	intervalNode *next = NULL;
+	Interval *linkedInterv = NULL;
+	void callbackTrigger();
+} *intervalNodePtr;
+
 
 class Interval {
 public:
 	bool interval(unsigned long _delay, void (*_callback)());	
 	void cancel();
 	static bool handler();
-	void printContainer();
-protected:
-	bool interval(unsigned long _delay, Interval* ptr);
+	static void printContainer();
+	virtual void ITV_callbackCaller(){};//enable inheritance support overwrite this function inderived class
 private:
-	void (*callback)();
-	unsigned long delay = 0;
-	unsigned long timeStamp = 0;
-	static void triage(Interval *input);
-	static void triage_handler();
-	bool set = false;
-	virtual void ITV_callbackCaller();//enable inheritance support overwrite this function inderived class
-	static Interval *intervalList[sizeOfInterval];
+	static intervalNodePtr head;
+	intervalNodePtr node = NULL;
+	static inline void triage(intervalNodePtr current);
+	Interval *linkedInterv = NULL;
 };
 
-
 #endif
-

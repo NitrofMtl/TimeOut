@@ -1,4 +1,4 @@
-V1.0
+V2.0
 
 TimeOut Is a library to easily handle non blocking delay. It is store all instance into a container and sort them to save MCU time at each checkup.
 
@@ -9,6 +9,18 @@ Non recommended usage:
 		It run into « void loop », so it is dependant of the speed of the loop. It could be a couple of millisecond offset. For time critical timing, use interrupt instead.
 	-For short very short or very long delay :
 		For very short delay, it take some time to sort the container when addin and when triggering a delay, so It could be better to use interrupt for realy small delay. For long delay, « millis() » is also not so accurate. There could be a better way. (No test have been 		done. If people want to do some testing for short and log delay, you could post your 			result on TimeOut github.)
+
+
+
+
+
+		New on version 2.0
+
+-Dynamic instance allocation, not limit in size
+-linked list operation, faster operation
+
+
+
 
 
 TimeOut usage : Callback is triggered only once after being set, after the delay.
@@ -25,10 +37,11 @@ TimeOut usage : Callback is triggered only once after being set, after the delay
 		timeout0.cancel(); 
 
 To set the timeout, there is 4 mode possible :
-Normal
-timeOut_Lock
-timeOut_Undeleable
-timeOut_Lock_Undelable
+
+TIMEOUT_NORMAL 			//timer can be overwriten or cleared, you can just omit it, it have overload
+TIMEOUT_LOCK 				//timer cannot be overwriten
+TIMEOUT_UNDELETABLE  		//timer cannot be cleared
+TIMEOUT_LOCK_UNDELETABLE 	//timer cannot be cleared or overwriten
 
 
 	Normal mode :
@@ -38,7 +51,7 @@ Example :
 timeout0.timeOut(10000, callback0); //set time out
 delay(1000); //wait a seconde for demonstration
 timeout0.timeOut(10000, callback0); //set new timeout time 10 seconde from now
-timeout0.cancel();//time out have been deleted and callback will not append
+timeout0.cancel();//timeOut have been deleted and callback will not append
 
 timeOut_Lock :
 You can't overwrite a timeout previously set. It will keep the delay to the first value until it is triggered.
