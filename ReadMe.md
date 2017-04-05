@@ -42,7 +42,7 @@ timeout0.handler(); (you need only one handler for all instance of TimeOut. It h
 ```
 timeout0.cancel(); 
 ```
-To set the timeout, there is 4 mode possible :
+To set the timeout, there is 4 modes possible :
 ```
 TIMEOUT_NORMAL 			//timer can be overwriten or cleared, you can just omit it, it have overload
 TIMEOUT_LOCK 				//timer cannot be overwriten
@@ -98,14 +98,14 @@ interval0.handler();(you need only one handler for all instance of interval. It 
 ```
 
 Little tool: second, minutes and hour macro:
-	- `sc(int)`, return int*1000 for a second
-	- `mn(int)`, return int*60000 for a minute
-	- `hr(int)`, return int*3600000 for an hour
+* `sc(int)`, return int*1000 for a second
+* `mn(int)`, return int*60000 for a minute
+* `hr(int)`, return int*3600000 for an hour
 
 For example, for a delay you could do:
-```	unsigned long someDelay = hr(1)+mn(30)+sc(20) //will do 1:30 and 20 second delay
-
-	timeout0.timeOut(someDelay, callback0);	
+```
+unsigned long someDelay = hr(1)+mn(30)+sc(20) //will do 1:30 and 20 second delay
+timeout0.timeOut(someDelay, callback0);	
 ```
 ### **------>>	NOTE !!!!!!!!!!!!!!!!!!!!!!**
 ####	Time macro do not support floating point !!!
