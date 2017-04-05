@@ -14,10 +14,10 @@ Non recommended usage:
 
 
 
-###		New on version 2.0
+###		**New on version 2.0**
 
--Dynamic instance allocation, not limit in size
--linked list operation, faster operation
+* Dynamic instance allocation, not limit in size
+* linked list operation, faster operation
 
 
 
