@@ -101,6 +101,7 @@ void TimeOut::cancel(){
 	}
 	if(!previous) TimeOut::head = tmpNode->next;
 	else previous->next =  tmpNode->next;
+	node = NULL;
 	delete tmpNode;
 }
 
@@ -186,7 +187,9 @@ void intervalNode::callbackTrigger() {
 
 
 bool Interval::interval(unsigned long _delay, void (*_callback)()){
-	if (node) return false; //can't set an already set interval
+	if (node) {
+		return false; //can't set an already set interval
+	}
 	node = new intervalNode;
 	node->timeStamp = millis();
 	node->callback = _callback;
@@ -210,6 +213,7 @@ void Interval::cancel(){
 	}
 	if(!previous) Interval::head = tmp->next;
 	else previous->next = tmp->next;
+	node = NULL;
 	delete tmp;
 }
 
