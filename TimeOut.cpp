@@ -95,14 +95,16 @@ void TimeOut::cancel(){
 	if (node->undeletable) return; //do not cancel a timer if Undeleable
 	TimeOutNodePtr tmpNode = TimeOut::head;
 	TimeOutNodePtr previous = NULL;
-	while(this->node!=tmpNode) {
-		previous = tmpNode;
-		tmpNode=tmpNode->next;
+	while (tmpNode){
+		while(this->node!=tmpNode) {
+			previous = tmpNode;
+			tmpNode=tmpNode->next;
+		}
+		if(!previous) TimeOut::head = tmpNode->next;
+		else previous->next =  tmpNode->next;
+		node = NULL;
+		delete tmpNode;
 	}
-	if(!previous) TimeOut::head = tmpNode->next;
-	else previous->next =  tmpNode->next;
-	node = NULL;
-	delete tmpNode;
 }
 
 
