@@ -30,6 +30,7 @@
 #endif
 
 #include "TimeOut.h"
+#include <SoftwareSerial>
 
 TimeOutNodePtr TimeOut::head = NULL;
 
@@ -238,7 +239,7 @@ bool Interval::handler(){
 	}
 }
 
-void Interval::printContainer(){
+void Interval::printContainer(HardwareSerial& stream){
 	Serial.println("Interval container contain the following timer: ");
 	if(!Interval::head) Serial.println("Container emty! ");
 	unsigned long now = millis();
@@ -248,14 +249,34 @@ void Interval::printContainer(){
 			Serial.println("No timer set");
 			return;
 		}
-		Serial.print("Container delay ");
-		Serial.print(it->delay);
-		Serial.print(" remain: ");
-		Serial.println(it->timeStamp+it->delay-now);
+		stream.print("Container delay ");
+		stream.print(it->delay);
+		stream.print(" remain: ");
+		stream.println(it->timeStamp+it->delay-now);
 		it = it->next;
 	}
-	Serial.println("End.");
-	Serial.println();
+	stream.println("End.");
+	stream.println();
+}
+
+void Interval::printContainer(SoftwareSerial& stream){
+	Serial.println("Interval container contain the following timer: ");
+	if(!Interval::head) Serial.println("Container emty! ");
+	unsigned long now = millis();
+	intervalNodePtr it = Interval::head;
+	while(it){	
+		if(!Interval::head){
+			Serial.println("No timer set");
+			return;
+		}
+		stream.print("Container delay ");
+		stream.print(it->delay);
+		stream.print(" remain: ");
+		stream.println(it->timeStamp+it->delay-now);
+		it = it->next;
+	}
+	stream.println("End.");
+	stream.println();
 }
 
 void Interval::triage(intervalNodePtr current){ //sort timer by time to be trigged
