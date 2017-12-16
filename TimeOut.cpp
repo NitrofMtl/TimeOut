@@ -53,7 +53,7 @@ TimeOut::TimeOut(uint8_t hour, uint8_t minute, uint8_t seconde, void (*_callback
 bool TimeOut::timeOut(unsigned long _delay, void (*_callback)()){
 	if (node) {
 		if(node->lock) return false; //exit if node is not overwritable
-		else cancel();//delete a set timeOut for overwrite
+		else if(node->timeStamp) cancel();//delete a set timeOut for overwrite
 	}	
 	node = new TimeOutNode;		
 	node->callback = _callback;
@@ -95,7 +95,6 @@ void TimeOut::cancel(){
 	if (node->undeletable) return; //do not cancel a timer if Undeleable
 	TimeOutNodePtr tmpNode = TimeOut::head;
 	TimeOutNodePtr previous = NULL;
-	while (tmpNode){
 		while(this->node!=tmpNode) {
 			previous = tmpNode;
 			tmpNode=tmpNode->next;
@@ -104,7 +103,6 @@ void TimeOut::cancel(){
 		else previous->next =  tmpNode->next;
 		node = NULL;
 		delete tmpNode;
-	}
 }
 
 
@@ -113,6 +111,7 @@ bool TimeOut::handler(){
 	unsigned long now = millis();
 	if (now - TimeOut::head->timeStamp > TimeOut::head->delay){
 		TimeOut::head->callbackTrigger();
+		TimeOut::head->timeStamp = 0; //reset stamp to check it on overwrite
 		TimeOut::head->lock = false;
 		TimeOut::head->undeletable = false;
 		TimeOutNodePtr temp = TimeOut::head;		
