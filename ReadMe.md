@@ -1,4 +1,4 @@
-# V2.1
+# V2.2
 
 ## TimeOut Is a library to easily handle non blocking delay. It is store all instance into a container and sort them to save MCU time at each checkup.
 
