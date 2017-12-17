@@ -1,5 +1,5 @@
 /*
-  V2.1
+  V2.2
 */
 
 #include <TimeOut.h>
@@ -35,7 +35,7 @@ void setup() {
   
   class1.setInterval(4000);
 
-  Interval::printContainer();
+  Interval::printContainer(Serial);
 }
 
 void loop() {

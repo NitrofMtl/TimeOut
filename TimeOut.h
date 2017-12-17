@@ -1,6 +1,6 @@
 /*
 
-	V2.1
+	V2.2
   Copyright (c) 4/04/2017
 
     By Nitrof
@@ -78,7 +78,8 @@ public:
 	bool timeOut(uint8_t hour, uint8_t minute, uint8_t seconde, void (*_callback)(), uint8_t _timerType);
 	void cancel();
 	static bool handler();
-	static void printContainer();
+	static void printContainer(HardwareSerial& stream);
+	static void printContainer(SoftwareSerial& stream);
 	//enable inheritance support overwrite this function inderived class
 	virtual void TO_callbackCaller(){};
 

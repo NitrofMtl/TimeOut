@@ -1,6 +1,6 @@
 /*
 
-	V2.1
+	V2.2
   Copyright (c) 4/04/2017
 
     By Nitrof
@@ -156,23 +156,43 @@ void TimeOut::triage(TimeOutNodePtr current){	//sort timer by time remainin to b
 	}
 }
 
-void TimeOut::printContainer(){
-	Serial.println("Timer container contain the following timer: ");
+
+void TimeOut::printContainer(HardwareSerial& stream){
+	stream.println("Timer container contain the following timer: ");
 	unsigned long now = millis();
 	TimeOutNodePtr it = TimeOut::head;
 	while(it){	
 		if(!TimeOut::head){
-			Serial.println("No timer set");
+			stream.println("No timer set");
 			return;
 		}
-		Serial.print("Container delay ");
-		Serial.print(it->delay);
-		Serial.print(" remain: ");
-		Serial.println(it->timeStamp+it->delay-now);
+		stream.print("Container delay ");
+		stream.print(it->delay);
+		stream.print(" remain: ");
+		stream.println(it->timeStamp+it->delay-now);
 		it = it->next;
 	}
-	Serial.println("End.");
-	Serial.println();
+	stream.println("End.");
+	stream.println();
+}
+
+void TimeOut::printContainer(SoftwareSerial& stream){
+	stream.println("Timer container contain the following timer: ");
+	unsigned long now = millis();
+	TimeOutNodePtr it = TimeOut::head;
+	while(it){	
+		if(!TimeOut::head){
+			stream.println("No timer set");
+			return;
+		}
+		stream.print("Container delay ");
+		stream.print(it->delay);
+		stream.print(" remain: ");
+		stream.println(it->timeStamp+it->delay-now);
+		it = it->next;
+	}
+	stream.println("End.");
+	stream.println();
 }
 
 
