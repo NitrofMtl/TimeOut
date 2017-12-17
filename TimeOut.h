@@ -32,6 +32,8 @@
     #include "WProgram.h"
 #endif
 
+#include <SoftwareSerial.h>
+
 
 #define TIMEOUT_NORMAL 0			//timer can be overwriten or cleared
 #define TIMEOUT_LOCK 1				//timer cannot be overwriten
@@ -109,7 +111,8 @@ public:
 	bool interval(uint8_t hour, uint8_t minute, uint8_t seconde, void (*_callback)());	
 	void cancel();
 	static bool handler();
-	static void printContainer();
+	static void printContainer(HardwareSerial& stream);
+	static void printContainer(SoftwareSerial& stream);
 	virtual void ITV_callbackCaller(){};//enable inheritance support overwrite this function inderived class
 private:
 	static intervalNodePtr head;

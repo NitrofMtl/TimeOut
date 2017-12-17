@@ -30,7 +30,7 @@
 #endif
 
 #include "TimeOut.h"
-#include <SoftwareSerial>
+#include <SoftwareSerial.h>
 
 TimeOutNodePtr TimeOut::head = NULL;
 
