@@ -32,7 +32,7 @@
     #include "WProgram.h"
 #endif
 
-#include <SoftwareSerial.h>
+//#include <SoftwareSerial.h>
 
 
 #define TIMEOUT_NORMAL 0			//timer can be overwriten or cleared
@@ -79,8 +79,8 @@ public:
 	void cancel();
 	static bool handler();
 	static void printContainer(HardwareSerial& stream);
-	static void printContainer(SoftwareSerial& stream);
-	//enable inheritance support overwrite this function inderived class
+	//static void printContainer(SoftwareSerial& stream);
+	//enable inheritance support overwrite this function in derived class
 	virtual void TO_callbackCaller(){};
 
 private:
@@ -113,13 +113,14 @@ public:
 	void cancel();
 	static bool handler();
 	static void printContainer(HardwareSerial& stream);
-	static void printContainer(SoftwareSerial& stream);
+	//static void printContainer(SoftwareSerial& stream);
 	virtual void ITV_callbackCaller(){};//enable inheritance support overwrite this function inderived class
 private:
 	static intervalNodePtr head;
 	intervalNodePtr node = NULL;
 	static inline void triage(intervalNodePtr current);
 	Interval *linkedInterv = NULL;
+	uint8_t _num;
 };
 
 #endif

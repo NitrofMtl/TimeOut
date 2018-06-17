@@ -30,7 +30,7 @@
 #endif
 
 #include "TimeOut.h"
-#include <SoftwareSerial.h>
+//#include <SoftwareSerial.h>
 
 TimeOutNodePtr TimeOut::head = NULL;
 
@@ -98,6 +98,7 @@ void TimeOut::cancel(){
 	TimeOutNodePtr previous = NULL;
 		while(this->node!=tmpNode) {
 			previous = tmpNode;
+			if (!tmpNode->next) return; //break loop if no instace correspond
 			tmpNode=tmpNode->next;
 		}
 		if(!previous) TimeOut::head = tmpNode->next;
@@ -175,7 +176,7 @@ void TimeOut::printContainer(HardwareSerial& stream){
 	stream.println("End.");
 	stream.println();
 }
-
+/*
 void TimeOut::printContainer(SoftwareSerial& stream){
 	stream.println("Timer container contain the following timer: ");
 	unsigned long now = millis();
@@ -193,14 +194,14 @@ void TimeOut::printContainer(SoftwareSerial& stream){
 	}
 	stream.println("End.");
 	stream.println();
-}
+}*/
 
 
 
 intervalNodePtr Interval::head = NULL;
 
 void intervalNode::callbackTrigger() {
-	if(callback)callback(); 
+	if(callback) callback(); 
 	else {
 		Serial.println("callbackCaller trig");
 		linkedInterv->ITV_callbackCaller();
@@ -231,8 +232,10 @@ void Interval::cancel(){
 	intervalNodePtr previous = NULL;
 	while(this->node!=tmp){
 		previous = tmp;
+		if (!tmp->next) return; //break loop if no instance correspond
 		tmp = tmp->next;
 	}
+	Serial.println("got node");
 	if(!previous) Interval::head = tmp->next;
 	else previous->next = tmp->next;
 	node = NULL;
@@ -261,32 +264,32 @@ bool Interval::handler(){
 
 void Interval::printContainer(HardwareSerial& stream){
 	Serial.println("Interval container contain the following timer: ");
-	if(!Interval::head) Serial.println("Container emty! ");
+	if(!Interval::head) stream.println("Container emty! ");
 	unsigned long now = millis();
-	intervalNodePtr it = Interval::head;
-	while(it){	
-		if(!Interval::head){
+	intervalNodePtr node = Interval::head;
+	while(node){	
+		/*if(!Interval::head){
 			Serial.println("No timer set");
 			return;
-		}
+		}*/
 		stream.print("Container delay ");
-		stream.print(it->delay);
+		stream.print(node->delay);
 		stream.print(" remain: ");
-		stream.println(it->timeStamp+it->delay-now);
-		it = it->next;
+		stream.println(node->timeStamp + node->delay  - now);
+		node = node->next;
 	}
 	stream.println("End.");
 	stream.println();
 }
-
+/*
 void Interval::printContainer(SoftwareSerial& stream){
-	Serial.println("Interval container contain the following timer: ");
-	if(!Interval::head) Serial.println("Container emty! ");
+	stream.println("Interval container contain the following timer: ");
+	if(!Interval::head) stream.println("Container emty! ");
 	unsigned long now = millis();
 	intervalNodePtr it = Interval::head;
 	while(it){	
 		if(!Interval::head){
-			Serial.println("No timer set");
+			stream.println("No timer set");
 			return;
 		}
 		stream.print("Container delay ");
@@ -297,7 +300,7 @@ void Interval::printContainer(SoftwareSerial& stream){
 	}
 	stream.println("End.");
 	stream.println();
-}
+}*/
 
 void Interval::triage(intervalNodePtr current){ //sort timer by time to be trigged
 	if (!Interval::head) {
