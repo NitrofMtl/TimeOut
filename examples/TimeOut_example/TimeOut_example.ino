@@ -13,10 +13,11 @@ TimeOut timeOut7;
 
 /*
     TIMEOUT_NORMAL       timer can be overwriten or cleared(same as omit it)
-    TIMEOUT_LOCK            timer can ont be overwriten
+ 
     TIMEOUT_UNDELETABLE      timer can not be cleared
-    TIMEOUT_LOCK_UNDELETABLE  timer can not be overwriten or cleared
-
+/*********
+===>TIMEOUT_LOCK_UNDELETABLE & TIMEOUT_LOCK_UNDELETABLE options have been remove because of bugs and limitations.
+/*********
     time macro : sc(number_of_secondes) , mn(number_of_secondes) , hr(number_of_secondes)
 */
 
@@ -24,13 +25,13 @@ void setup() {
   Serial.begin(9600);
       //   calling timeOut could be inside any function -->
   timeout0.timeOut(10000, callback0); //delay, callback function
-  timeout2.timeOut(4500, callback2, TIMEOUT_LOCK); //delay, callback function, parameter
-  timeout2.timeOut(15000, callback2); //will not change timeout2 because it was lock.
+  //timeout2.timeOut(4500, callback2, TIMEOUT_LOCK_UNDELETABLE); //NOT WORKING ANYMORE
+  //timeout2.timeOut(15000, callback2); 
   timeout3.timeOut(60000, callback3);
   timeout3.cancel();//will not append because canceled
   timeout5.timeOut(75000, callback5, TIMEOUT_UNDELETABLE);
   timeout5.cancel(); //timer will not be delete because it have been set to Undelable
-  timeout6.timeOut(9000, callback6, TIMEOUT_LOCK_UNDELETABLE);
+  //timeout6.timeOut(9000, callback6, TIMEOUT_LOCK_UNDELETABLE);  //NOT WORKING ANYMORE
   // set timeOut in 1 hour, 33 minutes and 0 seconde
   timeOut7.timeOut(1, 33, 0, callback7, TIMEOUT_NORMAL);
 }
