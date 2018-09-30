@@ -6,9 +6,9 @@
 
 Non recommended usage: 
 	-For very time critical timing.
-		It run into « void loop », so it is dependant of the speed of the loop. It could be a couple of millisecond offset. For time critical timing, use interrupt instead.
+		It run into « void loop », so it is dependent of the speed of the loop. It could be a couple of millisecond offset. For time critical timing, use interrupt instead.
 	-For short very short or very long delay :
-		For very short delay, it take some time to sort the container when addin and when triggering a delay, so It could be better to use interrupt for realy small delay. For long delay, « millis() » is also not so accurate. There could be a better way. (No test have been done. If people want to do some testing for short and log delay, you could post your result on TimeOut github.)
+		For very short delay, it take some time to sort the container when adding and when triggering a delay, so It could be better to use interrupt for really small delay. For long delay, « millis() » is also not so accurate. There could be a better way. (No test have been done. If people want to do some testing for short and log delay, you could post your result on TimeOut github.)
 
 
 
@@ -84,12 +84,12 @@ FUNCTION REMOVED FROM LIBRARY
 You can't overwrite a timeout previously set. It will keep the delay to the first value until it is triggered.
 But it can be deleted.
 
-  timeOut_Undeleable :
+  TIMEOUT_UNDELETABLE :
 You can overwrite a timeout like in normal mode but clear() will not work.
 Example :
 
 ``
-timeout0.timeOut(, callback0, timeOut_Undeleable);
+timeout0.timeOut(, callback0, TIMEOUT_UNDELETABLE);
 timeout0.cancel(); //will be ignore and callback will be triggered after delay
 ``
 
