@@ -23,20 +23,24 @@
   CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */  
 
-#if (ARDUINO >= 100)
-    #include "Arduino.h"
-#else
-    #include "WProgram.h"
-#endif
-
 #include "TimeOut.h"
-//#include <SoftwareSerial.h>
+
+TimeOutNode::TimeOutNode() :
+	delay(0),
+	timeStamp(0),
+	//lock(false),
+	undeletable(false),	
+	next(NULL),
+	linkedTO(NULL) //bound timeOut instance
+{}
 
 TimeOutNodePtr TimeOut::head = NULL;
 
 void TimeOutNode::callbackTrigger() {
 	if(callback)callback(); 
-	else linkedTO->TO_callbackCaller();
+	else {
+		linkedTO->TO_callbackCaller();
+	}
 }
 
 TimeOut::TimeOut(){}
@@ -52,10 +56,6 @@ TimeOut::TimeOut(uint8_t hour, uint8_t minute, uint8_t seconde, void (*_callback
 
 
 bool TimeOut::timeOut(unsigned long _delay, void (*_callback)()){
-	if (node) {
-		if(node->lock) return false; //exit if node is not overwritable
-		else if(node->timeStamp) cancel();//delete a set timeOut for overwrite
-	}	
 	node = new TimeOutNode;		
 	node->callback = _callback;
 	node->delay = _delay;
@@ -67,22 +67,8 @@ bool TimeOut::timeOut(unsigned long _delay, void (*_callback)()){
 
 
 bool TimeOut::timeOut(unsigned long _delay, void (*_callback)(), uint8_t _timerType){
-	if(!timeOut(_delay, _callback)) return false; //if timer can't be set
-	switch (_timerType) {
-		case 0: break;
-		case TIMEOUT_LOCK: 
-			if (node->lock) return false ; //do not set a timer to a locked instance
-			node->lock = true; 
-			break;
-		case TIMEOUT_UNDELETABLE: 
-			node->undeletable = true; 
-			break;
-		case TIMEOUT_LOCK_UNDELETABLE:
-			if (node->lock) return false ; //do not set a timer to a locked instance
-			node->lock = true;
-			node->undeletable = true; 
-			break;
-	}
+	timeOut(_delay, _callback);
+	if ( TIMEOUT_UNDELETABLE == _timerType ) node->undeletable = true;
 	return true;
 }
 
@@ -113,9 +99,6 @@ bool TimeOut::handler(){
 	unsigned long now = millis();
 	if (now - TimeOut::head->timeStamp > TimeOut::head->delay){
 		TimeOut::head->callbackTrigger();
-		TimeOut::head->timeStamp = 0; //reset stamp to check it on overwrite
-		TimeOut::head->lock = false;
-		TimeOut::head->undeletable = false;
 		TimeOutNodePtr temp = TimeOut::head;		
 		if(TimeOut::head->next)
 			TimeOut::head = TimeOut::head->next; //switch to next timer
@@ -176,27 +159,6 @@ void TimeOut::printContainer(HardwareSerial& stream){
 	stream.println("End.");
 	stream.println();
 }
-/*
-void TimeOut::printContainer(SoftwareSerial& stream){
-	stream.println("Timer container contain the following timer: ");
-	unsigned long now = millis();
-	TimeOutNodePtr it = TimeOut::head;
-	while(it){	
-		if(!TimeOut::head){
-			stream.println("No timer set");
-			return;
-		}
-		stream.print("Container delay ");
-		stream.print(it->delay);
-		stream.print(" remain: ");
-		stream.println(it->timeStamp+it->delay-now);
-		it = it->next;
-	}
-	stream.println("End.");
-	stream.println();
-}*/
-
-
 
 intervalNodePtr Interval::head = NULL;
 
@@ -235,7 +197,7 @@ void Interval::cancel(){
 		if (!tmp->next) return; //break loop if no instance correspond
 		tmp = tmp->next;
 	}
-	Serial.println("got node");
+	//Serial.println("got node");
 	if(!previous) Interval::head = tmp->next;
 	else previous->next = tmp->next;
 	node = NULL;
@@ -281,26 +243,6 @@ void Interval::printContainer(HardwareSerial& stream){
 	stream.println("End.");
 	stream.println();
 }
-/*
-void Interval::printContainer(SoftwareSerial& stream){
-	stream.println("Interval container contain the following timer: ");
-	if(!Interval::head) stream.println("Container emty! ");
-	unsigned long now = millis();
-	intervalNodePtr it = Interval::head;
-	while(it){	
-		if(!Interval::head){
-			stream.println("No timer set");
-			return;
-		}
-		stream.print("Container delay ");
-		stream.print(it->delay);
-		stream.print(" remain: ");
-		stream.println(it->timeStamp+it->delay-now);
-		it = it->next;
-	}
-	stream.println("End.");
-	stream.println();
-}*/
 
 void Interval::triage(intervalNodePtr current){ //sort timer by time to be trigged
 	if (!Interval::head) {
