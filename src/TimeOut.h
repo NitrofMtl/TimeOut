@@ -36,9 +36,9 @@
 
 
 #define TIMEOUT_NORMAL 0			//timer can be overwriten or cleared
-#define TIMEOUT_LOCK 1				//timer cannot be overwriten
+//#define TIMEOUT_LOCK 1	//removed			//timer cannot be overwriten
 #define TIMEOUT_UNDELETABLE 2 		//timer cannot be cleared
-#define TIMEOUT_LOCK_UNDELETABLE 3	//timer cannot be overwriten or cleared
+//#define TIMEOUT_LOCK_UNDELETABLE 3	//removed  //timer cannot be overwriten or cleared
 
 #ifndef sc(x)
 #define sc(x)(x*1000UL)
@@ -56,15 +56,15 @@
 class TimeOut;
 
 typedef class TimeOutNode {
+	TimeOutNode();
 	friend class TimeOut;
 	void (*callback)();
-	unsigned long delay = 0;
-	unsigned long timeStamp = 0;
-	bool lock = false;
-	bool undeletable = false;	
-
-	TimeOutNode *next = NULL;
-	TimeOut *linkedTO = NULL; //bound timeOut instance
+	unsigned long delay;
+	unsigned long timeStamp;
+	bool lock;
+	bool undeletable;	
+	TimeOutNode *next;
+	TimeOut *linkedTO; //bound timeOut instance*/
 	void callbackTrigger();
 }*TimeOutNodePtr;
 
@@ -79,7 +79,6 @@ public:
 	void cancel();
 	static bool handler();
 	static void printContainer(HardwareSerial& stream);
-	//static void printContainer(SoftwareSerial& stream);
 	//enable inheritance support overwrite this function in derived class
 	virtual void TO_callbackCaller(){};
 
@@ -113,7 +112,7 @@ public:
 	void cancel();
 	static bool handler();
 	static void printContainer(HardwareSerial& stream);
-	//static void printContainer(SoftwareSerial& stream);
+
 	virtual void ITV_callbackCaller(){};//enable inheritance support overwrite this function inderived class
 private:
 	static intervalNodePtr head;
