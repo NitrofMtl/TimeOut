@@ -40,17 +40,17 @@
 #define TIMEOUT_UNDELETABLE 2 		//timer cannot be cleared
 //#define TIMEOUT_LOCK_UNDELETABLE 3	//removed  //timer cannot be overwriten or cleared
 
-#ifndef sc(x)
+#ifndef sc
 #define sc(x)(x*1000UL)
-#endif 
+#endif /* sc */
 
-#ifndef mn(x)
+#ifndef mn
 #define mn(x)(x*60000UL)
-#endif
+#endif /* mn */
 
-#ifndef hr(x)
+#ifndef hr
 #define hr(x)(x*3600000UL)
-#endif
+#endif /* hr */
 
 
 class TimeOut;
