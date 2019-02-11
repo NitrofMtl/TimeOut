@@ -79,7 +79,7 @@ bool TimeOut::timeOut(uint8_t hour, uint8_t minute, uint8_t seconde, void (*_cal
 
 
 void TimeOut::cancel(){
-	if (node || node->undeletable) return; //do not cancel a timer if Undeleable
+	if (!node || node->undeletable) return; //do not cancel a timer if Undeleable
 	TimeOutNodePtr tmpNode = TimeOut::head;
 	TimeOutNodePtr previous = NULL;
 		while(this->node!=tmpNode) {
