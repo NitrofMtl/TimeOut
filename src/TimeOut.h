@@ -71,10 +71,9 @@ protected:
 
 template <typename ... Args>
 class TimeOutNodeArgs : public TimeOutNode {
-	//TimeOutNodeArgs<Args...>(Args ... ts, void (*cb)(Args ..._args) ) : args(ts...), pack(ParamsPack<Args...> { args, cb } ){};
-	TimeOutNodeArgs<Args...>(Args ... arg, void (*cb)(Args ...) ) : pack(ParamsPack<Args...> { MicroTuple<Arg...>(arg...), cb } ){};
+	TimeOutNodeArgs<Args...>(Args ... ts, void (*cb)(Args ..._args) ) : args(ts...), pack(ParamsPack<Args...> { args, cb } ){};
 	friend class TimeOut;
-	//MicroTuple<Args...> args;
+	MicroTuple<Args...> args;
 	ParamsPack<Args...> pack;
 	void callbackTrigger() { if(pack) pack.getPack();};
 };
