@@ -11,7 +11,7 @@ TimeOut timeOut7;
     TIMEOUT::NORMAL       timer can be overwriten or cleared(same as omit it)
  
     TIMEOUT::UNDELETABLE      timer can not be cleared
-/*********
+/*
 
     time macro : sc(number_of_secondes) , mn(number_of_secondes) , hr(number_of_secondes)
 */
