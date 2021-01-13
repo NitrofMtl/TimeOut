@@ -1,64 +1,29 @@
-# V3.0
+# TimeOut 
 
-## TimeOut Is a library to easily handle non blocking delay. It is store all instance into a container and sort them to save MCU time at each checkup.
+Current Version: V3.0
 
-#### Usage: To be use when «delay()» could have work but you need arduino to do other task between the timer start and is triggered.
+## Description
+
+TimeOut is an Arduino library to easily handle non-blocking delays. It is able to store all Timeout instances into a container and sort them to save MCU time at each cycle.
+
+## Recommended usage
+
+This library is designed to be used when the Arduino «delay()» could have worked, but you need to be able to do other tasks between the timer's start and it's triggered emd.
 
 Non recommended usage: 
-	-For very time critical timing.
+	-For very  precise and/or time-critical uses.
 		It run into « void loop », so it is dependent of the speed of the loop. It could be a couple of millisecond offset. For time critical timing, use interrupt instead.
 	-For short very short or very long delay :
 		For very short delay, it take some time to sort the container when adding and when triggering a delay, so It could be better to use interrupt for really small delay. For long delay, « millis() » is also not so accurate. There could be a better way. (No test have been done. If people want to do some testing for short and log delay, you could post your result on TimeOut github.)
-### **New on version 3.0**
-* TimeOut and Interal are on the same handler, only one `handler()` is needed on `void loop()`
-* New callack function with any type and number of arguments:
 
-```
-TimeOut0.timeout<char*, int, String, float>(delay, callback, char*, int, String, float); //use with instance
-Timeout<char*, int, String, float>(delay, callback, char*, int, String, float); //static scope operator
-interval0.interval<char*, int, String, float>(delay, callback, char*, int, String, float);
-```
+## Version History
+Please see [this page](/version_history.md).
 
-Support: integral, floating point, object and pointers.
+## Example use
 
-### Callback signature MUST match the arguments into the timeOut/Interval call!
-Example:
-```
-void callback(char* c, int i, String s, float f){
-    
-}
-```
+Please see the [/examples/](/examples/) folder for working examples.
 
-
-
-
-
-
-###		**New on version 2.0**
-
-* Dynamic instance allocation, not limit in size
-* linked list operation, faster operation
-
-
-**2.1 add**
-new constructor an call for  timeOut and interval:
-####
-```
-<TimeOut t1(hour, minute, seconde, callback);
-
-TimeOut t2;
-t2.timeOut(hour, minute, seconde, callback, mode);
-
-
-Interval i1;
-i1.interval(hour, minute, seconde, callback);
-```
-
-
-
-
-####
-## **TimeOut :**
+### Timeout
 
 TimeOut usage : Callback is triggered only once after being set, after the delay.
 * Start an instance :
@@ -111,8 +76,9 @@ timeout0.cancel(); //will be ignore and callback will be triggered after delay
 ``
 
 
-## **Interval :** 
-#### After being set, callback will be triggered at each delay interval.
+### Interval
+
+After being set, a callback will be triggered at EACH delay interval.
 
 ```
 Interval interval0; (Start an instance)
@@ -124,19 +90,21 @@ interval0.cancel();(cancel an interval, could be call inside any function)
 interval0.handler();(you need only one handler for all instance of interval. It have to be put on void loop();)
 ```
 
-Little tool: second, minutes and hour macro:
+#### HINT: 
+Time macro supporting second, minutes and hour:
 * `sc(int)`, return int*1000 for a second
 * `mn(int)`, return int*60000 for a minute
 * `hr(int)`, return int*3600000 for an hour
 
 For example, for a delay you could do:
+
 ```
 unsigned long someDelay = hr(1)+mn(30)+sc(20) //will do 1:30 and 20 second delay
 timeout0.timeOut(someDelay, callback0);	
 ```
-### **------>>	NOTE !!!!!!!!!!!!!!!!!!!!!!**
-####	Time macro do not support floating point !!!
-		Can't do: `hr(1.5)`
+
+**Please Note:**
+The time macro do not support floating point! You can't do: `hr(1.5)`
 
 
 
