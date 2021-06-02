@@ -1,6 +1,6 @@
 # TimeOut 
 
-Current Version: V3.0
+Current Version: V4.0
 
 ## Description
 
@@ -8,7 +8,7 @@ TimeOut is an Arduino library to easily handle non-blocking delays. It is able t
 
 ## Recommended usage
 
-This library is designed to be used when the Arduino «delay()» could have worked, but you need to be able to do other tasks between the timer's start and it's triggered emd.
+This library is designed to be used when the Arduino «delay()» could have worked, but you need to be able to do other tasks between the timer's start and it's triggered time.
 
 Non recommended usage: 
 	-For very  precise and/or time-critical uses.

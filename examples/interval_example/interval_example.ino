@@ -4,18 +4,19 @@ Interval interval0; //start instance, instance have to be into global scope
 Interval interval1;
 Interval interval2;
 Interval interval3;
+Interval interval4;
 
-class Intereval_Example_Inheritance : public Interval {
+// for functor as callback, type and number of member to be initialize do not mather
+  //You could add constructor to initialize member, or use brace initializer like later in example
+struct FunctorExample {
+  FunctorExample(int someArguments) : arg(someArguments) {}
+  void operator()() { 
+    Serial.print("functor have been call and the pass argument increment is now: ");
+    Serial.println(arg);
+    arg++;
+  }
   private:
-    //this is the function that will be call by Interval class, it HAVE to be this exact name !!!
-    void TO_callbackCaller() {
-      Serial.println("Class ineheritance callback have been triggered ");
-    }
-  public:
-    //let the callback parameter NULL to call inheritance method
-    void setInterval(unsigned long delay) {
-      interval(delay, NULL);
-    }//let the callback parameter NULL to call inheritance method
+  int arg;
 };
 
 Intereval_Example_Inheritance class1;
@@ -31,14 +32,16 @@ void setup() {
   interval2.interval(0, 0, 15, intervalPrint2);
 
   interval3.interval<char*, int, String, float>(5000, callbackWithArguments, "this argument timer call after; ", 5000, " micro second ", 5.5 );
-  
-  class1.setInterval(4000);
 
-  Interval::printContainer(Serial);
+  interval4.interval( 4000, FunctorExample { 3 });
+  
+  
+
+
 }
 
 void loop() {
-  Interval::handler(); //main monitor handler, Have to be into void loop
+  Interval::handler(); //main monitor handler, Have to be into void loop, if using also timeOut, only one handler is needed for both
 }
 
 void intervalPrint0() {

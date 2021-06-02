@@ -1,3 +1,16 @@
+### **New on version 4.0**
+* change function pointer to template, enableling to use of functor and lambdas
+* Remove virtual TO_callbackTrigguer function
+
+#### minor internal change
+* deprecate print container
+* optimise node constructor inititalization
+* make macros sec min and hour to millisecond constant expression
+* change pointer to NULL to nullptr
+* add head to nullptr gard on cancel
+* change pointer to NULL to nullptr
+
+
 ### **New on version 3.0**
 * TimeOut and Interal are on the same handler, only one `handler()` is needed on `void loop()`
 * New callack function with any type and number of arguments:
