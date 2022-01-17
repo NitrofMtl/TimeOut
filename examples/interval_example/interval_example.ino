@@ -19,7 +19,8 @@ struct FunctorExample {
   int arg;
 };
 
-Intereval_Example_Inheritance class1;
+//Inheritance capability have been remove
+//Intereval_Example_Inheritance class1;
 
 void setup() {
   Serial.begin(9600);
