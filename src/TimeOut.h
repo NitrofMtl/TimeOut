@@ -1,7 +1,7 @@
 /*
 
-        V4.0
-  Copyright (c) 7/04/202
+        V5.0
+  Copyright (c) 22/01/2022
 
     By Nitrof
 
@@ -29,7 +29,7 @@
 
 #include "Arduino.h"
 
-#include "microTuple.h"
+//#include "microTuple.h"
 
 constexpr uint32_t sc(uint16_t x) { return x * 1000; }
 
@@ -54,7 +54,6 @@ class TimeOutNode {
 protected:
   TimeOutNode();
   TimeOutNode(unsigned long delay, unsigned long timeStamp);
-  //TimeOutNode(unsigned long delay, unsigned long timeStamp, TIMEOUT type); //maybe remove if no dived ctor ?? view line 169
   virtual ~TimeOutNode() = default;
   friend class TimeOut;
   friend class Interval;
@@ -62,7 +61,7 @@ protected:
   unsigned long timeStamp;
   TIMEOUT type;
   TimeOutNode *next;
-  virtual void callback() {}
+  virtual void callback() = 0;
 };
 
 template <typename Callable> class TimeOutNodeDerived : public TimeOutNode {
@@ -76,20 +75,6 @@ template <typename Callable> class TimeOutNodeDerived : public TimeOutNode {
   friend class TimeOut;
 };
 
-template <typename... Args> class TimeOutNodeArgs : public TimeOutNode {
-friend class TimeOut;
-friend class Interval;
-  TimeOutNodeArgs<Args...>(unsigned long delay, unsigned long &&timeStamp,
-                           Args... arg, void (*cb)(Args...))
-      : TimeOutNode(delay, timeStamp),
-        pack(ParamsPack<Args...>{MicroTuple<Args...>(arg...), cb}){};
-  friend class TimeOut;
-  ParamsPack<Args...> pack;
-  void callback() override {
-    if (pack)
-      pack.getPack();
-  };
-};
 
 class TimeOut {
 public:
@@ -108,11 +93,7 @@ public:
     sort(node); // place the instance into container
   }
 
-  template <typename... Args>
-  TimeOut(unsigned long delay, void (*_callback)(Args... args), Args... args) 
-      : node( new TimeOutNodeArgs<Args...>(delay, millis(), args..., _callback) ){
-    sort(node); // place the instance into container
-  };
+
 
 private:
   static TimeOutNode *head;
@@ -134,7 +115,7 @@ protected:
     while (it) {
       long itRemain = it->timeStamp + it->delay - now;
       long currentRemain = current->timeStamp + current->delay - now;
-      if (itRemain > currentRemain) { // spot with timer a smaler than this
+      if (itRemain > currentRemain) { // spot if the timer is smaler than it timer
         // insert instance
         if (previous)
           previous->next = current;
@@ -146,7 +127,7 @@ protected:
         it->next = current;
         return;
       }
-      previous = it;
+      previous = it; 
       it = it->next; // it++
     }
   };
@@ -173,21 +154,16 @@ public:
                TIMEOUT timerType) {
     node = new TimeOutNodeDerived<Callable>(
         timeElementToMillis(hour, minute, seconde), millis(), callable);
-        node->type = timerType; //maybe add new derived ctor ??? view line 57
+        node->type = timerType;
     sort(node); // place the instance into container
   }
 
-  template <typename... Args>
-  void timeOut(unsigned long delay, void (*_callback)(Args... args),
-               Args... args) {
-    node = new TimeOutNodeArgs<Args...>(delay, millis(), args..., _callback);
-    sort(node); // place the instance into container
-  };
-
   void cancel();
   static void handler();
-  static void printContainer(HardwareSerial &stream);
+
 };
+
+
 
 class Interval : public TimeOut {
 public:
@@ -207,14 +183,6 @@ public:
     node->type = TIMEOUT::INTERVAL;
     sort(node); // place the instance into container
   }
-
-  template <typename... Args> 
-  void interval(unsigned long delay, void (*callback)(Args... args),
-                Args... args) {
-    node = new TimeOutNodeArgs<Args...>(delay, millis(), args..., callback);
-    node->type = TIMEOUT::INTERVAL;
-    sort(node); // place the instance into container
-  };
 
   constexpr static void (*handler)(){TimeOut::handler};
 };

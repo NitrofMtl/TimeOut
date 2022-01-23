@@ -6,11 +6,8 @@ TimeOutNode::TimeOutNode()
 TimeOutNode::TimeOutNode(unsigned long delay, unsigned long timeStamp)
     : delay(delay), timeStamp(timeStamp), type(TIMEOUT::NORMAL), next(nullptr) {
 }
-/*
-TimeOutNode::TimeOutNode(unsigned long delay, unsigned long timeStamp,
-                         TIMEOUT type)
-    : delay(delay), timeStamp(timeStamp), type(type), next(nullptr) {}
-*/
+
+
 TimeOutNode *TimeOut::head = nullptr;
 
 void TimeOut::cancel() {
@@ -50,28 +47,11 @@ void TimeOut::handler() {
       // reset triggered interval instance
       temp->timeStamp = now;
       temp->next = nullptr;
-      sort(temp);
-    } else
-      delete temp; // delete triggered timeout instance
+      sort(temp);//
+      return;
+    }
+    delete temp;
   }
 }
 
-[[deprecated("will be remove on next version")]] void
-TimeOut::printContainer(HardwareSerial &stream) {
-  stream.println("Timer container contain the following timer: ");
-  unsigned long now = millis();
-  TimeOutNode *it = TimeOut::head;
-  while (it) {
-    if (!TimeOut::head) {
-      stream.println("No timer set");
-      return;
-    }
-    stream.print("Container delay ");
-    stream.print(it->delay);
-    stream.print(" remain: ");
-    stream.println(it->timeStamp + it->delay - now);
-    it = it->next;
-  }
-  stream.println("End.");
-  stream.println();
-}
+
