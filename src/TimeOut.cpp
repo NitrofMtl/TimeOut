@@ -11,7 +11,7 @@ TimeOutNode::TimeOutNode(unsigned long delay, unsigned long timeStamp)
 TimeOutNode *TimeOut::head = nullptr;
 
 void TimeOut::cancel() {
-  if (TIMEOUT::UNDELETABLE == node->type)
+  if (node && TIMEOUT::UNDELETABLE == node->type) //check if node is null first
     return; // do not cancel a timer if Undeleable
   if (!TimeOut::head)
     return; // guard if no timer arer set
@@ -38,6 +38,8 @@ void TimeOut::handler() {
   if (now - TimeOut::head->timeStamp > TimeOut::head->delay) {
 
     TimeOut::head->callback();
+    if (!TimeOut::head)
+      return; // if a cancel have deleted head
     TimeOutNode *temp = TimeOut::head;
     if (TimeOut::head->next)
       TimeOut::head = TimeOut::head->next; // switch to next timer

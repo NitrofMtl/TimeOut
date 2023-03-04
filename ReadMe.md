@@ -1,6 +1,6 @@
 # TimeOut 
 
-Current Version: V5.0
+Current Version: V5.1
 
 ## Description
 
@@ -32,7 +32,8 @@ TimeOut timeout0; (instance declaration have to be in global scope)
 ```
 * Set the timeout :
 ```
-timeout0.timeOut(10000, callback0); //delay, function callback, could be call inside any function
+timeout0.timeOut(10000, callback0); //delay, function callback, could be call inside any function.
+Call it more then once add a new callback in the queue, it do not overwrite. To do so, programmer must delete it first.
 ```
 * add the handler into void loop :
 ```
@@ -42,6 +43,8 @@ timeout0.handler(); (you need only one handler for all instance of TimeOut. It h
 ```
 timeout0.cancel(); 
 ```
+If more  then one call is the queue list, the timer will be cancelled FIFO.
+
 To set the timeout, there is 2 modes possible :
 ~~TIMEOUT_NORMAL~~
 ~~TIMEOUT_UNDELETABLE~~
